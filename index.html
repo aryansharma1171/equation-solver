@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math & Physics Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #00d4ff;
+            background-color: #252525;
+            color: #fff;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            outline: none;
+            resize: vertical;
+            transition: border 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #00ffff;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #00d4ff;
+            color: #121212;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #00ffff;
+            color: #000;
+        }
+
+        .solution {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #00d4ff;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Equation Solver by A.S.</h1>
+
+        <textarea id="equation1" placeholder="Enter first equation..."></textarea>
+        <p id="solution1" class="solution"></p>
+
+        <textarea id="equation2" placeholder="Enter second equation..."></textarea>
+        <p id="solution2" class="solution"></p>
+
+        <textarea id="equation3" placeholder="Enter third equation..."></textarea>
+        <p id="solution3" class="solution"></p>
+
+        <button onclick="solveEquations()">Solve</button>
+        <button onclick="downloadPDF()">Download as PDF</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.3.1/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        function solveEquations() {
+            for (let i = 1; i <= 3; i++) {
+                let equation = document.getElementById("equation" + i).value;
+                let solutionField = document.getElementById("solution" + i);
+                
+                try {
+                    let result = math.simplify(equation).toString();
+                    solutionField.innerText = `Solution ${i}: ` + result;
+                } catch (error) {
+                    solutionField.innerText = `Solution ${i}: Invalid equation!`;
+                }
+            }
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            let doc = new jsPDF();
+            
+            doc.setFont("helvetica", "bold");
+            doc.text("Equation Solver by A.S.", 10, 10);
+
+            doc.setFont("helvetica", "normal");
+            let y = 20;
+
+            for (let i = 1; i <= 3; i++) {
+                let equationText = document.getElementById("equation" + i).value;
+                let solutionText = document.getElementById("solution" + i).innerText;
+
+                if (equationText.trim() !== "") {
+                    doc.text(`${i}. Equation:`, 10, y);
+                    doc.text(equationText, 20, y + 10);
+                    
+                    doc.text(`${i}. Solution:`, 10, y + 20);
+                    doc.text(solutionText.replace(`Solution ${i}: `, ""), 20, y + 30);
+                    
+                    y += 40;
+                }
+            }
+
+            doc.save("solution.pdf");
+        }
+    </script>
+
+</body>
+</html>
